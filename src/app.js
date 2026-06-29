@@ -1,28 +1,37 @@
-import express from 'express';
-import cors from 'cors';
-import healthcheckRouter from './route/healthcheck.route.js';
-import authRouter from './route/auth.routes.js';
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
-//basic configuration
-app.use(express.json({limit: "16kb"}))
-app.use(express.urlencoded({extended: true, limit: '16kb'}))
-app.use(express.static("public"))
+// basic configurations
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.static("public"));
+app.use(cookieParser());
 
-//cors configuration
-app.use(cors({origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
+// cors configurations
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:4200",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["content-Type", "Authorization"]
-}));
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
-//imports the routes
-app.use("/api/v1/healthcheck", healthcheckRouter);
+//  import the routes
+
+import healthCheckRouter from "./routes/healthcheck.routes.js";
+import authRouter from "./routes/auth.routes.js";
+import projectRouter from "./routes/project.routes.js";
+
+app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/projects", projectRouter);
 
-app.get('/', (req, res)=> {
-    res.send("Welcome to basecamp!!");
+app.get("/", (req, res) => {
+  res.send("Welcome to basecampy");
 });
 
 export default app;
